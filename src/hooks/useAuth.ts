@@ -51,11 +51,27 @@ export function useAuth() {
     return { error };
   };
 
+  const resetPassword = async (email: string) => {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: 'https://my-stock-market-tracker.vercel.app/reset-password',
+    });
+    return { error };
+  };
+
+  const updatePassword = async (newPassword: string) => {
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword
+    });
+    return { error };
+  };
+
   return {
     user,
     loading,
     signIn,
     signUp,
     signOut,
+    resetPassword,
+    updatePassword,
   };
 }
