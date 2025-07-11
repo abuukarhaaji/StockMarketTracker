@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 import { X, Building2 } from 'lucide-react';
 
 interface AddCompanyModalProps {
@@ -13,15 +14,28 @@ export function AddCompanyModal({ isOpen, onClose, onSubmit }: AddCompanyModalPr
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) return;
+    if (!name.trim()) {
+      toast.error('Company name is required');
+      return;
+    }
 
     setLoading(true);
     try {
       await onSubmit(name.trim());
+      toast.success(`Company "${name.trim()}" added successfully!`);
       setName('');
       onClose();
     } catch (error) {
       console.error('Error adding company:', error);
+      if (error instanceof Error) {
+        if (error.message.includes('duplicate') || error.message.includes('unique')) {
+          toast.error('A company with this name already exists');
+        } else {
+          toast.error('Failed to add company. Please try again.');
+        }
+      } else {
+        toast.error('Failed to add company. Please try again.');
+      }
     } finally {
       setLoading(false);
     }

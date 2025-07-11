@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 import { X, Filter } from 'lucide-react';
 
 interface FilterModalProps {
@@ -15,12 +16,25 @@ export function FilterModal({ isOpen, onClose, onApplyFilter, currentMinAmount }
     e.preventDefault();
     const amount = minAmount ? parseFloat(minAmount) : undefined;
     onApplyFilter(amount);
+    
+    if (amount !== undefined) {
+      const formatCurrency = (amount: number) => {
+        return new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: 'USD',
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0,
+        }).format(amount);
+      };
+      toast.success(`Filter applied: Showing companies that paid more than ${formatCurrency(amount)}`);
+    }
     onClose();
   };
 
   const handleClear = () => {
     setMinAmount('');
     onApplyFilter(undefined);
+    toast.success('Filter cleared: Showing all companies');
     onClose();
   };
 

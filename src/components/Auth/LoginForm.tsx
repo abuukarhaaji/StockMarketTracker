@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useAuth } from '../../hooks/useAuth';
 import { LogIn, Eye, EyeOff } from 'lucide-react';
 
@@ -23,9 +24,14 @@ export function LoginForm() {
 
       if (error) {
         setError(error.message);
+        toast.error(error.message);
+      } else if (!isSignUp) {
+        // Only show success toast for login, not signup
+        toast.success('Welcome back! Successfully logged in.');
       }
     } catch (err) {
       setError('An unexpected error occurred');
+      toast.error('An unexpected error occurred');
     } finally {
       setLoading(false);
     }

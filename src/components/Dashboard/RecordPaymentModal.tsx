@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 import { X, DollarSign } from 'lucide-react';
 import { Company } from '../../types';
 
@@ -17,17 +18,49 @@ export function RecordPaymentModal({ isOpen, onClose, onSubmit, companies }: Rec
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!companyId || !amount || !date) return;
+    
+    // Validate required fields
+    if (!companyId) {
+      toast.error('Please select a company');
+      return;
+    }
+    if (!amount) {
+      toast.error('Please enter a payment amount');
+      return;
+    }
+    if (!date) {
+      toast.error('Please select a payment date');
+      return;
+    }
+    
+    const amountValue = parseFloat(amount);
+    if (isNaN(amountValue) || amountValue <= 0) {
+      toast.error('Please enter a valid payment amount');
+      return;
+    }
 
     setLoading(true);
     try {
-      await onSubmit(companyId, parseFloat(amount), date);
+      const selectedCompany = companies.find(c => c.id === companyId);
+      await onSubmit(companyId, amountValue, date);
+      
+      const formatCurrency = (amount: number) => {
+        return new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: 'USD',
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0,
+        }).format(amount);
+      };
+      
+      toast.success(`Payment of ${formatCurrency(amountValue)} recorded for ${selectedCompany?.name}!`);
       setCompanyId('');
       setAmount('');
       setDate(new Date().toISOString().split('T')[0]);
       onClose();
     } catch (error) {
       console.error('Error recording payment:', error);
+      toast.error('Failed to record payment. Please try again.');
     } finally {
       setLoading(false);
     }
