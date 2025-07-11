@@ -2,7 +2,7 @@ import React from 'react';
 import { useAuth } from './hooks/useAuth';
 import { LoginForm } from './components/Auth/LoginForm';
 import { Dashboard } from './components/Dashboard/Dashboard';
-import { Analytics } from "@vercel/analytics/next"
+import { Analytics } from "@vercel/analytics/react"
 function App() {
   const { user, loading } = useAuth();
 
