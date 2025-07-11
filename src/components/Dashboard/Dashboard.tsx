@@ -121,6 +121,15 @@ export function Dashboard() {
             <Trash2 className="w-5 h-5" />
             <span>Delete Company</span>
           </button>
+
+          <button
+            onClick={() => setShowSelectEditModal(true)}
+            disabled={companies.length === 0}
+            className="flex items-center justify-center space-x-2 bg-orange-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Edit3 className="w-5 h-5" />
+            <span>Edit Company Name</span>
+          </button>
         </div>
 
         {/* Control Buttons */}
@@ -170,15 +179,6 @@ export function Dashboard() {
           >
             <TrendingDown className="w-4 h-4" />
             <span>Sort by Top Paid Companies</span>
-          </button>
-
-          <button
-            onClick={() => setShowSelectEditModal(true)}
-            disabled={companies.length === 0}
-            className="flex items-center space-x-2 bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Edit3 className="w-4 h-4" />
-            <span>Edit Company Name</span>
           </button>
         </div>
 
