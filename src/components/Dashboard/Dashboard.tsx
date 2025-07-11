@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useCompanies } from '../../hooks/useCompanies';
 import { Header } from './Header';
-import { TotalIncomeCard } from './TotalIncomeCard';
 import { PaymentTable } from './PaymentTable';
 import { AnalyticsCards } from './AnalyticsCards';
 import { PaymentTrendsChart } from './PaymentTrendsChart';
@@ -11,17 +10,24 @@ import { FilterModal } from './FilterModal';
 import { AveragePerMonthModal } from './AveragePerMonthModal';
 import { MonthlyBreakdownModal } from './MonthlyBreakdownModal';
 import { DeleteCompanyModal } from './DeleteCompanyModal';
-import { Plus, Receipt, Filter, Calendar, TrendingDown, BarChart3 } from 'lucide-react';
+import { SelectCompanyModal } from './SelectCompanyModal';
+import { EditCompanyModal } from './EditCompanyModal';
+import { Plus, Receipt, Filter, Calendar, TrendingDown, BarChart3, Trash2, Edit3 } from 'lucide-react';
+import { CompanyWithPayments } from '../../types';
 
 export function Dashboard() {
-  const { companies, loading, addCompany, addPayment, deleteCompany } = useCompanies();
+  const { companies, loading, addCompany, addPayment, deleteCompany, updateCompany } = useCompanies();
   const [showAddCompanyModal, setShowAddCompanyModal] = useState(false);
   const [showRecordPaymentModal, setShowRecordPaymentModal] = useState(false);
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [showAverageModal, setShowAverageModal] = useState(false);
   const [showMonthlyBreakdownModal, setShowMonthlyBreakdownModal] = useState(false);
+  const [showSelectDeleteModal, setShowSelectDeleteModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showSelectEditModal, setShowSelectEditModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [companyToDelete, setCompanyToDelete] = useState<CompanyWithPayments | null>(null);
+  const [companyToEdit, setCompanyToEdit] = useState<CompanyWithPayments | null>(null);
   const [minAmount, setMinAmount] = useState<number | undefined>(undefined);
   const [sortByTopPaid, setSortByTopPaid] = useState(false);
 
@@ -54,7 +60,7 @@ export function Dashboard() {
     setSortByTopPaid(!sortByTopPaid);
   };
 
-  const handleDeleteCompany = (company: CompanyWithPayments) => {
+  const handleSelectDeleteCompany = (company: CompanyWithPayments) => {
     setCompanyToDelete(company);
     setShowDeleteModal(true);
   };
@@ -62,6 +68,16 @@ export function Dashboard() {
   const confirmDeleteCompany = async (companyId: string) => {
     await deleteCompany(companyId);
   };
+
+  const handleSelectEditCompany = (company: CompanyWithPayments) => {
+    setCompanyToEdit(company);
+    setShowEditModal(true);
+  };
+
+  const confirmEditCompany = async (companyId: string, name: string) => {
+    await updateCompany(companyId, name);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-navy-950">
       <Header />
@@ -87,6 +103,15 @@ export function Dashboard() {
           >
             <Receipt className="w-5 h-5" />
             <span>Record Payment</span>
+          </button>
+          
+          <button
+            onClick={() => setShowSelectDeleteModal(true)}
+            disabled={companies.length === 0}
+            className="flex items-center justify-center space-x-2 bg-red-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Trash2 className="w-5 h-5" />
+            <span>Delete Company</span>
           </button>
         </div>
 
@@ -136,6 +161,15 @@ export function Dashboard() {
             <TrendingDown className="w-4 h-4" />
             <span>Sort by Top Paid Companies</span>
           </button>
+
+          <button
+            onClick={() => setShowSelectEditModal(true)}
+            disabled={companies.length === 0}
+            className="flex items-center space-x-2 bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Edit3 className="w-4 h-4" />
+            <span>Edit Company Name</span>
+          </button>
         </div>
 
         {/* Companies Table */}
@@ -163,7 +197,7 @@ export function Dashboard() {
             </button>
           </div>
         ) : (
-          <PaymentTable companies={filteredCompanies} onDeleteCompany={handleDeleteCompany} />
+          <PaymentTable companies={filteredCompanies} />
         )}
 
         {/* Analytics Section at Bottom */}
@@ -207,6 +241,17 @@ export function Dashboard() {
         companies={companies}
       />
 
+      <SelectCompanyModal
+        isOpen={showSelectDeleteModal}
+        onClose={() => setShowSelectDeleteModal(false)}
+        onSelectCompany={handleSelectDeleteCompany}
+        companies={companies}
+        title="Delete Company"
+        description="Select a company to delete. This action will permanently remove the company and all its payment records."
+        actionButtonText="Delete Company"
+        actionButtonColor="red"
+      />
+
       <DeleteCompanyModal
         isOpen={showDeleteModal}
         onClose={() => {
@@ -215,6 +260,27 @@ export function Dashboard() {
         }}
         onConfirm={confirmDeleteCompany}
         company={companyToDelete}
+      />
+
+      <SelectCompanyModal
+        isOpen={showSelectEditModal}
+        onClose={() => setShowSelectEditModal(false)}
+        onSelectCompany={handleSelectEditCompany}
+        companies={companies}
+        title="Edit Company Name"
+        description="Select a company to edit its name."
+        actionButtonText="Edit Name"
+        actionButtonColor="blue"
+      />
+
+      <EditCompanyModal
+        isOpen={showEditModal}
+        onClose={() => {
+          setShowEditModal(false);
+          setCompanyToEdit(null);
+        }}
+        onSubmit={confirmEditCompany}
+        company={companyToEdit}
       />
     </div>
   );
