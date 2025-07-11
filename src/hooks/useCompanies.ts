@@ -2,16 +2,17 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { Company, Payment, CompanyWithPayments } from '../types';
 
-export function useCompanies() {
+export function useCompanies(selectedYear?: number) {
   const [companies, setCompanies] = useState<CompanyWithPayments[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const currentYear = selectedYear || new Date().getFullYear();
 
   const fetchCompanies = async () => {
     try {
       setLoading(true);
       
-      // Get current year
-      const currentYear = new Date().getFullYear();
+      // Get selected year range
       const startOfYear = `${currentYear}-01-01`;
       const endOfYear = `${currentYear}-12-31`;
 
@@ -56,7 +57,7 @@ export function useCompanies() {
 
   useEffect(() => {
     fetchCompanies();
-  }, []);
+  }, [currentYear]);
 
   const addCompany = async (name: string) => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -113,6 +114,7 @@ export function useCompanies() {
   return {
     companies,
     loading,
+    selectedYear: currentYear,
     addCompany,
     addPayment,
     deleteCompany,

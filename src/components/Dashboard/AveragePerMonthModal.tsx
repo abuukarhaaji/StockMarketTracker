@@ -6,9 +6,10 @@ interface AveragePerMonthModalProps {
   isOpen: boolean;
   onClose: () => void;
   companies: CompanyWithPayments[];
+  selectedYear: number;
 }
 
-export function AveragePerMonthModal({ isOpen, onClose, companies }: AveragePerMonthModalProps) {
+export function AveragePerMonthModal({ isOpen, onClose, companies, selectedYear }: AveragePerMonthModalProps) {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -21,12 +22,14 @@ export function AveragePerMonthModal({ isOpen, onClose, companies }: AveragePerM
   const getCompanyAveragePerMonth = (company: CompanyWithPayments) => {
     if (company.payments.length === 0) return 0;
     
-    // Get unique months that have payments
+    // Get unique months that have payments for the selected year
     const monthsWithPayments = new Set();
     company.payments.forEach(payment => {
       const date = new Date(payment.payment_date);
-      const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
-      monthsWithPayments.add(monthKey);
+      if (date.getFullYear() === selectedYear) {
+        const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
+        monthsWithPayments.add(monthKey);
+      }
     });
     
     const uniqueMonths = monthsWithPayments.size;
@@ -51,7 +54,7 @@ export function AveragePerMonthModal({ isOpen, onClose, companies }: AveragePerM
             <div className="bg-purple-100 dark:bg-purple-900/30 w-10 h-10 rounded-full flex items-center justify-center">
               <Calendar className="w-5 h-5 text-purple-600 dark:text-purple-400" />
             </div>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Average Payment Per Month</h2>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Average Payment Per Month ({selectedYear})</h2>
           </div>
           <button
             onClick={onClose}
@@ -67,8 +70,8 @@ export function AveragePerMonthModal({ isOpen, onClose, companies }: AveragePerM
               <div className="bg-gray-100 dark:bg-navy-800 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Calendar className="w-8 h-8 text-gray-400 dark:text-gray-500" />
               </div>
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No payment data</h3>
-              <p className="text-gray-600 dark:text-gray-300">No companies have made payments yet</p>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No payment data for {selectedYear}</h3>
+              <p className="text-gray-600 dark:text-gray-300">No companies have made payments in {selectedYear}</p>
             </div>
           ) : (
             <div className="space-y-3">

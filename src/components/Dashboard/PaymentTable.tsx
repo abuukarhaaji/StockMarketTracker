@@ -4,9 +4,10 @@ import { Building2 } from 'lucide-react';
 
 interface PaymentTableProps {
   companies: CompanyWithPayments[];
+  selectedYear: number;
 }
 
-export function PaymentTable({ companies }: PaymentTableProps) {
+export function PaymentTable({ companies, selectedYear }: PaymentTableProps) {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -24,10 +25,9 @@ export function PaymentTable({ companies }: PaymentTableProps) {
 
   // Get payment amount for a specific company and month
   const getPaymentForMonth = (company: CompanyWithPayments, monthIndex: number): number | null => {
-    const currentYear = new Date().getFullYear();
     const monthPayments = company.payments.filter(payment => {
       const paymentDate = new Date(payment.payment_date);
-      return paymentDate.getFullYear() === currentYear && paymentDate.getMonth() === monthIndex;
+      return paymentDate.getFullYear() === selectedYear && paymentDate.getMonth() === monthIndex;
     });
 
     if (monthPayments.length === 0) return null;
@@ -57,6 +57,9 @@ export function PaymentTable({ companies }: PaymentTableProps) {
 
   return (
     <div className="bg-white dark:bg-navy-900 rounded-xl shadow-sm border border-gray-200 dark:border-navy-700 overflow-hidden">
+      <div className="px-6 py-4 bg-gray-50 dark:bg-navy-800 border-b border-gray-200 dark:border-navy-700">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Payment Overview - {selectedYear}</h3>
+      </div>
       <div className="overflow-x-auto">
         <table className="min-w-full">
           <thead className="bg-gray-50 dark:bg-navy-800">

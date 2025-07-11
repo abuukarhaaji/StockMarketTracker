@@ -5,9 +5,10 @@ import { TrendingUp, PieChart as PieChartIcon } from 'lucide-react';
 
 interface PaymentTrendsChartProps {
   companies: CompanyWithPayments[];
+  selectedYear: number;
 }
 
-export function PaymentTrendsChart({ companies }: PaymentTrendsChartProps) {
+export function PaymentTrendsChart({ companies, selectedYear }: PaymentTrendsChartProps) {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -24,13 +25,12 @@ export function PaymentTrendsChart({ companies }: PaymentTrendsChartProps) {
   ];
 
   const barChartData = months.map((month, index) => {
-    const currentYear = new Date().getFullYear();
     let totalAmount = 0;
 
     companies.forEach(company => {
       company.payments.forEach(payment => {
         const paymentDate = new Date(payment.payment_date);
-        if (paymentDate.getFullYear() === currentYear && paymentDate.getMonth() === index) {
+        if (paymentDate.getFullYear() === selectedYear && paymentDate.getMonth() === index) {
           totalAmount += payment.amount;
         }
       });
@@ -64,14 +64,14 @@ export function PaymentTrendsChart({ companies }: PaymentTrendsChartProps) {
       <div className="bg-white dark:bg-navy-900 rounded-xl shadow-sm border border-gray-200 dark:border-navy-700 p-8">
         <div className="flex items-center space-x-2 mb-6">
           <TrendingUp className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Payment Trends</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Payment Trends ({selectedYear})</h3>
         </div>
         <div className="text-center py-12">
           <div className="bg-gray-100 dark:bg-navy-800 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
             <TrendingUp className="w-8 h-8 text-gray-400 dark:text-gray-500" />
           </div>
-          <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No payment data yet</h4>
-          <p className="text-gray-600 dark:text-gray-300">Start recording payments to see trends over time</p>
+          <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No payment data for {selectedYear}</h4>
+          <p className="text-gray-600 dark:text-gray-300">No payments were recorded during {selectedYear}</p>
         </div>
       </div>
     );
@@ -83,7 +83,7 @@ export function PaymentTrendsChart({ companies }: PaymentTrendsChartProps) {
       <div className="bg-white dark:bg-navy-900 rounded-xl shadow-sm border border-gray-200 dark:border-navy-700 p-6">
         <div className="flex items-center space-x-2 mb-6">
           <TrendingUp className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Monthly Payment Trends</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Monthly Payment Trends ({selectedYear})</h3>
         </div>
         
         <div className="h-80">
@@ -127,7 +127,7 @@ export function PaymentTrendsChart({ companies }: PaymentTrendsChartProps) {
         <div className="bg-white dark:bg-navy-900 rounded-xl shadow-sm border border-gray-200 dark:border-navy-700 p-6">
           <div className="flex items-center space-x-2 mb-6">
             <PieChartIcon className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Income Distribution by Company</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Income Distribution by Company ({selectedYear})</h3>
           </div>
           
           <div className="h-96">

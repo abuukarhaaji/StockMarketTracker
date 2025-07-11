@@ -4,6 +4,7 @@ import { Header } from './Header';
 import { PaymentTable } from './PaymentTable';
 import { AnalyticsCards } from './AnalyticsCards';
 import { PaymentTrendsChart } from './PaymentTrendsChart';
+import { YearFilter } from './YearFilter';
 import { AddCompanyModal } from './AddCompanyModal';
 import { RecordPaymentModal } from './RecordPaymentModal';
 import { FilterModal } from './FilterModal';
@@ -16,7 +17,8 @@ import { Plus, Receipt, Filter, Calendar, TrendingDown, BarChart3, Trash2, Edit3
 import { CompanyWithPayments } from '../../types';
 
 export function Dashboard() {
-  const { companies, loading, addCompany, addPayment, deleteCompany, updateCompany } = useCompanies();
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const { companies, loading, selectedYear: currentYear, addCompany, addPayment, deleteCompany, updateCompany } = useCompanies(selectedYear);
   const [showAddCompanyModal, setShowAddCompanyModal] = useState(false);
   const [showRecordPaymentModal, setShowRecordPaymentModal] = useState(false);
   const [showFilterModal, setShowFilterModal] = useState(false);
@@ -78,13 +80,19 @@ export function Dashboard() {
     await updateCompany(companyId, name);
   };
 
+  const handleYearChange = (year: number) => {
+    setSelectedYear(year);
+    // Reset filters when year changes
+    setMinAmount(undefined);
+    setSortByTopPaid(false);
+  };
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-navy-950">
       <Header />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Analytics Cards */}
-        <AnalyticsCards companies={companies} />
+        <AnalyticsCards companies={companies} selectedYear={selectedYear} />
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 mb-8">
@@ -117,6 +125,8 @@ export function Dashboard() {
 
         {/* Control Buttons */}
         <div className="flex flex-wrap gap-4 mb-6">
+          <YearFilter selectedYear={selectedYear} onYearChange={handleYearChange} />
+          
           <button
             onClick={() => setShowFilterModal(true)}
             className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-colors ${
@@ -197,15 +207,15 @@ export function Dashboard() {
             </button>
           </div>
         ) : (
-          <PaymentTable companies={filteredCompanies} />
+          <PaymentTable companies={filteredCompanies} selectedYear={selectedYear} />
         )}
 
         {/* Analytics Section at Bottom */}
         <div className="mt-16">
-          <h2 className="text-2xl font-bold text-green-600 mb-8">Analytics & Trends</h2>
+          <h2 className="text-2xl font-bold text-green-600 mb-8">Analytics & Trends ({selectedYear})</h2>
           
           {/* Payment Trends Chart */}
-          <PaymentTrendsChart companies={companies} />
+          <PaymentTrendsChart companies={companies} selectedYear={selectedYear} />
         </div>
       </main>
 
@@ -227,6 +237,7 @@ export function Dashboard() {
         isOpen={showMonthlyBreakdownModal}
         onClose={() => setShowMonthlyBreakdownModal(false)}
         companies={companies}
+        selectedYear={selectedYear}
       />
       <FilterModal
         isOpen={showFilterModal}
@@ -239,6 +250,7 @@ export function Dashboard() {
         isOpen={showAverageModal}
         onClose={() => setShowAverageModal(false)}
         companies={companies}
+        selectedYear={selectedYear}
       />
 
       <SelectCompanyModal

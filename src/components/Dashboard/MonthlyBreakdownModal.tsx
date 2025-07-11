@@ -6,9 +6,10 @@ interface MonthlyBreakdownModalProps {
   isOpen: boolean;
   onClose: () => void;
   companies: CompanyWithPayments[];
+  selectedYear: number;
 }
 
-export function MonthlyBreakdownModal({ isOpen, onClose, companies }: MonthlyBreakdownModalProps) {
+export function MonthlyBreakdownModal({ isOpen, onClose, companies, selectedYear }: MonthlyBreakdownModalProps) {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -26,16 +27,18 @@ export function MonthlyBreakdownModal({ isOpen, onClose, companies }: MonthlyBre
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth();
+  const isCurrentYear = selectedYear === currentYear;
 
-  // Calculate monthly totals up to current month
-  const monthlyData = months.slice(0, currentMonth + 1).map((month, index) => {
+  // For current year, show up to current month; for other years, show all months
+  const monthsToShow = isCurrentYear ? currentMonth + 1 : 12;
+  const monthlyData = months.slice(0, monthsToShow).map((month, index) => {
     let totalAmount = 0;
     let paymentCount = 0;
 
     companies.forEach(company => {
       company.payments.forEach(payment => {
         const paymentDate = new Date(payment.payment_date);
-        if (paymentDate.getFullYear() === currentYear && paymentDate.getMonth() === index) {
+        if (paymentDate.getFullYear() === selectedYear && paymentDate.getMonth() === index) {
           totalAmount += payment.amount;
           paymentCount += 1;
         }
@@ -61,7 +64,7 @@ export function MonthlyBreakdownModal({ isOpen, onClose, companies }: MonthlyBre
             <div className="bg-blue-100 dark:bg-navy-800 w-10 h-10 rounded-full flex items-center justify-center">
               <Calendar className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             </div>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Monthly Income Breakdown {currentYear}</h2>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Monthly Income Breakdown {selectedYear}</h2>
           </div>
           <button
             onClick={onClose}
@@ -75,7 +78,9 @@ export function MonthlyBreakdownModal({ isOpen, onClose, companies }: MonthlyBre
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <TrendingUp className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-              <span className="font-medium text-blue-900 dark:text-blue-300">Year-to-Date Total</span>
+              <span className="font-medium text-blue-900 dark:text-blue-300">
+                {isCurrentYear ? 'Year-to-Date Total' : `${selectedYear} Total`}
+              </span>
             </div>
             <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
               {formatCurrency(totalYearToDate)}
@@ -89,8 +94,8 @@ export function MonthlyBreakdownModal({ isOpen, onClose, companies }: MonthlyBre
               <div className="bg-gray-100 dark:bg-navy-800 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Calendar className="w-8 h-8 text-gray-400 dark:text-gray-500" />
               </div>
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No payment data</h3>
-              <p className="text-gray-600 dark:text-gray-300">No payments have been recorded yet</p>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No payment data for {selectedYear}</h3>
+              <p className="text-gray-600 dark:text-gray-300">No payments have been recorded for {selectedYear}</p>
             </div>
           ) : (
             <div className="space-y-3">
