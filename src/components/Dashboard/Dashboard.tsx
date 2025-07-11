@@ -10,15 +10,18 @@ import { RecordPaymentModal } from './RecordPaymentModal';
 import { FilterModal } from './FilterModal';
 import { AveragePerMonthModal } from './AveragePerMonthModal';
 import { MonthlyBreakdownModal } from './MonthlyBreakdownModal';
+import { DeleteCompanyModal } from './DeleteCompanyModal';
 import { Plus, Receipt, Filter, Calendar, TrendingDown, BarChart3 } from 'lucide-react';
 
 export function Dashboard() {
-  const { companies, loading, addCompany, addPayment } = useCompanies();
+  const { companies, loading, addCompany, addPayment, deleteCompany } = useCompanies();
   const [showAddCompanyModal, setShowAddCompanyModal] = useState(false);
   const [showRecordPaymentModal, setShowRecordPaymentModal] = useState(false);
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [showAverageModal, setShowAverageModal] = useState(false);
   const [showMonthlyBreakdownModal, setShowMonthlyBreakdownModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [companyToDelete, setCompanyToDelete] = useState<CompanyWithPayments | null>(null);
   const [minAmount, setMinAmount] = useState<number | undefined>(undefined);
   const [sortByTopPaid, setSortByTopPaid] = useState(false);
 
@@ -51,6 +54,14 @@ export function Dashboard() {
     setSortByTopPaid(!sortByTopPaid);
   };
 
+  const handleDeleteCompany = (company: CompanyWithPayments) => {
+    setCompanyToDelete(company);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteCompany = async (companyId: string) => {
+    await deleteCompany(companyId);
+  };
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-navy-950">
       <Header />
@@ -152,7 +163,7 @@ export function Dashboard() {
             </button>
           </div>
         ) : (
-          <PaymentTable companies={filteredCompanies} />
+          <PaymentTable companies={filteredCompanies} onDeleteCompany={handleDeleteCompany} />
         )}
 
         {/* Analytics Section at Bottom */}
@@ -194,6 +205,16 @@ export function Dashboard() {
         isOpen={showAverageModal}
         onClose={() => setShowAverageModal(false)}
         companies={companies}
+      />
+
+      <DeleteCompanyModal
+        isOpen={showDeleteModal}
+        onClose={() => {
+          setShowDeleteModal(false);
+          setCompanyToDelete(null);
+        }}
+        onConfirm={confirmDeleteCompany}
+        company={companyToDelete}
       />
     </div>
   );

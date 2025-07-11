@@ -82,11 +82,25 @@ export function useCompanies() {
     await fetchCompanies();
   };
 
+  const deleteCompany = async (company_id: string) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
+    const { error } = await supabase
+      .from('companies')
+      .delete()
+      .eq('id', company_id)
+      .eq('user_id', user.id);
+
+    if (error) throw error;
+    await fetchCompanies();
+  };
   return {
     companies,
     loading,
     addCompany,
     addPayment,
+    deleteCompany,
     refreshCompanies: fetchCompanies,
   };
 }

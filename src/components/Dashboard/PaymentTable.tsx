@@ -1,12 +1,13 @@
 import React from 'react';
 import { CompanyWithPayments } from '../../types';
-import { Building2 } from 'lucide-react';
+import { Building2, Trash2 } from 'lucide-react';
 
 interface PaymentTableProps {
   companies: CompanyWithPayments[];
+  onDeleteCompany: (company: CompanyWithPayments) => void;
 }
 
-export function PaymentTable({ companies }: PaymentTableProps) {
+export function PaymentTable({ companies, onDeleteCompany }: PaymentTableProps) {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -72,6 +73,9 @@ export function PaymentTable({ companies }: PaymentTableProps) {
               <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900 dark:text-white bg-blue-50 dark:bg-navy-700">
                 Total
               </th>
+              <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900 dark:text-white">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody className="bg-white dark:bg-navy-900 divide-y divide-gray-200 dark:divide-navy-700">
@@ -103,6 +107,15 @@ export function PaymentTable({ companies }: PaymentTableProps) {
                   <span className="text-sm font-bold text-blue-600 dark:text-blue-400">
                     {formatCurrency(company.total_amount)}
                   </span>
+                </td>
+                <td className="px-6 py-4 text-center">
+                  <button
+                    onClick={() => onDeleteCompany(company)}
+                    className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
+                    title={`Delete ${company.name}`}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 </td>
               </tr>
             ))}
