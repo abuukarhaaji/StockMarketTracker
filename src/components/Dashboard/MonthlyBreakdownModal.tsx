@@ -10,7 +10,7 @@ interface MonthlyBreakdownModalProps {
 }
 
 export function MonthlyBreakdownModal({ isOpen, onClose, companies, selectedYear }: MonthlyBreakdownModalProps) {
- const formatCurrency = (amount: number) => {
+const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat('en-GB', {
     style: 'currency',
     currency: 'GBP',
