@@ -147,16 +147,16 @@ export function PaymentTrendsChart({ companies, selectedYear }: PaymentTrendsCha
                     <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
                   ))}
                 </Pie>
-                <Tooltip 
-                  formatter={(value: number) => [formatCurrency(value), 'Total Income']}
-                  contentStyle={{ 
-                    backgroundColor: '#ffffff',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '8px',
-                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                    fontSize: window.innerWidth > 640 ? '14px' : '12px'
-                  }}
-                />
+<Tooltip 
+  formatter={(value: number) => [formatCurrency(value), 'Total Income']}
+  contentStyle={{ 
+    backgroundColor: '#ffffff',
+    border: '1px solid #e5e7eb',
+    borderRadius: '8px',
+    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+    fontSize: window.innerWidth > 640 ? '14px' : '12px'
+  }}
+/>
                 <Legend 
                   wrapperStyle={{
                     fontSize: window.innerWidth > 640 ? '14px' : '12px',
