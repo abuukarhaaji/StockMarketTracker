@@ -45,12 +45,12 @@ export function RecordPaymentModal({ isOpen, onClose, onSubmit, companies }: Rec
       await onSubmit(companyId, amountValue, date);
       
       const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat('en-US', {
-          style: 'currency',
-          currency: 'USD',
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 0,
-        }).format(amount);
+return new Intl.NumberFormat('en-GB', {
+    style: 'currency',
+    currency: 'GBP',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
       };
       
       toast.success(`Payment of ${formatCurrency(amountValue)} recorded for ${selectedCompany?.name}!`);
