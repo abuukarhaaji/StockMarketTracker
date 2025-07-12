@@ -13,12 +13,14 @@ import { MonthlyBreakdownModal } from './MonthlyBreakdownModal';
 import { DeleteCompanyModal } from './DeleteCompanyModal';
 import { SelectCompanyModal } from './SelectCompanyModal';
 import { EditCompanyModal } from './EditCompanyModal';
+import { CompanyPaymentHistoryModal } from './CompanyPaymentHistoryModal';
+import { EditPaymentModal } from './EditPaymentModal';
 import { Plus, Receipt, Filter, Calendar, TrendingDown, BarChart3, Trash2, Edit3 } from 'lucide-react';
 import { CompanyWithPayments } from '../../types';
 
 export function Dashboard() {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const { companies, loading, selectedYear: currentYear, addCompany, addPayment, deleteCompany, updateCompany } = useCompanies(selectedYear);
+  const { companies, loading, selectedYear: currentYear, addCompany, addPayment, deleteCompany, updateCompany, updatePayment } = useCompanies(selectedYear);
   const [showAddCompanyModal, setShowAddCompanyModal] = useState(false);
   const [showRecordPaymentModal, setShowRecordPaymentModal] = useState(false);
   const [showFilterModal, setShowFilterModal] = useState(false);
@@ -28,8 +30,12 @@ export function Dashboard() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showSelectEditModal, setShowSelectEditModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showPaymentHistoryModal, setShowPaymentHistoryModal] = useState(false);
+  const [showEditPaymentModal, setShowEditPaymentModal] = useState(false);
   const [companyToDelete, setCompanyToDelete] = useState<CompanyWithPayments | null>(null);
   const [companyToEdit, setCompanyToEdit] = useState<CompanyWithPayments | null>(null);
+  const [selectedCompanyForHistory, setSelectedCompanyForHistory] = useState<CompanyWithPayments | null>(null);
+  const [selectedCompanyForEditPayment, setSelectedCompanyForEditPayment] = useState<CompanyWithPayments | null>(null);
   const [minAmount, setMinAmount] = useState<number | undefined>(undefined);
   const [sortByTopPaid, setSortByTopPaid] = useState(false);
 
@@ -80,6 +86,19 @@ export function Dashboard() {
     await updateCompany(companyId, name);
   };
 
+  const handleCompanyClick = (company: CompanyWithPayments) => {
+    setSelectedCompanyForHistory(company);
+    setShowPaymentHistoryModal(true);
+  };
+
+  const handleEditPayment = (company: CompanyWithPayments) => {
+    setSelectedCompanyForEditPayment(company);
+    setShowEditPaymentModal(true);
+  };
+
+  const confirmEditPayment = async (paymentId: string, amount: number) => {
+    await updatePayment(paymentId, amount);
+  };
   const handleYearChange = (year: number) => {
     setSelectedYear(year);
     // Reset filters when year changes
@@ -207,7 +226,12 @@ export function Dashboard() {
             </button>
           </div>
         ) : (
-          <PaymentTable companies={filteredCompanies} selectedYear={selectedYear} />
+          <PaymentTable 
+            companies={filteredCompanies} 
+            selectedYear={selectedYear}
+            onCompanyClick={handleCompanyClick}
+            onEditPayment={handleEditPayment}
+          />
         )}
 
         {/* Analytics Section at Bottom */}
@@ -293,6 +317,27 @@ export function Dashboard() {
         }}
         onSubmit={confirmEditCompany}
         company={companyToEdit}
+      />
+
+      <CompanyPaymentHistoryModal
+        isOpen={showPaymentHistoryModal}
+        onClose={() => {
+          setShowPaymentHistoryModal(false);
+          setSelectedCompanyForHistory(null);
+        }}
+        company={selectedCompanyForHistory}
+        selectedYear={selectedYear}
+      />
+
+      <EditPaymentModal
+        isOpen={showEditPaymentModal}
+        onClose={() => {
+          setShowEditPaymentModal(false);
+          setSelectedCompanyForEditPayment(null);
+        }}
+        onSubmit={confirmEditPayment}
+        company={selectedCompanyForEditPayment}
+        selectedYear={selectedYear}
       />
     </div>
   );

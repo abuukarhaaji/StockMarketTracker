@@ -130,16 +130,16 @@ export function PaymentTrendsChart({ companies, selectedYear }: PaymentTrendsCha
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Income Distribution by Company ({selectedYear})</h3>
           </div>
           
-          <div className="h-96">
+          <div className="h-96 lg:h-96 md:h-80 sm:h-64">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={pieChartData}
                   cx="50%"
                   cy="50%"
-                  labelLine={false}
-                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(1)}%`}
-                  outerRadius={120}
+                  labelLine={window.innerWidth > 768}
+                  label={window.innerWidth > 768 ? ({ name, percent }) => `${name}: ${(percent * 100).toFixed(1)}%` : false}
+                  outerRadius={window.innerWidth > 768 ? 120 : window.innerWidth > 640 ? 100 : 80}
                   fill="#8884d8"
                   dataKey="value"
                 >
@@ -154,9 +154,18 @@ export function PaymentTrendsChart({ companies, selectedYear }: PaymentTrendsCha
                     border: '1px solid #e5e7eb',
                     borderRadius: '8px',
                     boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                    fontSize: window.innerWidth > 640 ? '14px' : '12px'
                   }}
                 />
-                <Legend />
+                <Legend 
+                  wrapperStyle={{
+                    fontSize: window.innerWidth > 640 ? '14px' : '12px',
+                    paddingTop: '20px'
+                  }}
+                  layout={window.innerWidth > 768 ? 'horizontal' : 'vertical'}
+                  align={window.innerWidth > 768 ? 'center' : 'left'}
+                  verticalAlign={window.innerWidth > 768 ? 'bottom' : 'middle'}
+                />
               </PieChart>
             </ResponsiveContainer>
           </div>

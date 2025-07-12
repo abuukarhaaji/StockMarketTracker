@@ -111,6 +111,19 @@ export function useCompanies(selectedYear?: number) {
     await fetchCompanies();
   };
 
+  const updatePayment = async (payment_id: string, amount: number) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
+    const { error } = await supabase
+      .from('payments')
+      .update({ amount })
+      .eq('id', payment_id)
+      .eq('user_id', user.id);
+
+    if (error) throw error;
+    await fetchCompanies();
+  };
   return {
     companies,
     loading,
@@ -119,6 +132,7 @@ export function useCompanies(selectedYear?: number) {
     addPayment,
     deleteCompany,
     updateCompany,
+    updatePayment,
     refreshCompanies: fetchCompanies,
   };
 }
