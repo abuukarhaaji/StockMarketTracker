@@ -78,7 +78,7 @@ export function PaymentTable({ companies, selectedYear, onCompanyClick, onEditPa
                 Total
               </th>
               <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900 dark:text-white bg-blue-50 dark:bg-navy-700">
-                Actions-Now
+                Actions
               </th>
             </tr>
           </thead>
