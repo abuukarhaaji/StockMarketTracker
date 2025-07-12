@@ -14,15 +14,14 @@ export function DeleteCompanyModal({ isOpen, onClose, onConfirm, company }: Dele
   const [loading, setLoading] = useState(false);
   const [confirmText, setConfirmText] = useState('');
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
-
+const formatCurrency = (amount: number) => {
+  return new Intl.NumberFormat('en-GB', {
+    style: 'currency',
+    currency: 'GBP',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
+};
   const handleConfirm = async () => {
     if (!company) return;
     
