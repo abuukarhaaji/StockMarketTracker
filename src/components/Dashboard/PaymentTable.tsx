@@ -1,6 +1,6 @@
 import React from 'react';
 import { CompanyWithPayments } from '../../types';
-import { Building2, Edit3 } from 'lucide-react';
+import { Building2, Edit3, Trash2 } from 'lucide-react';
 
 interface PaymentTableProps {
   companies: CompanyWithPayments[];
@@ -118,13 +118,20 @@ export function PaymentTable({ companies, selectedYear, onCompanyClick, onEditPa
                     {formatCurrency(company.total_amount)}
                   </span>
                 </td>
-                <td className="px-6 py-4 text-center bg-blue-50 dark:bg-navy-700">
+                <td className="px-6 py-4 text-center bg-blue-50 dark:bg-navy-700 flex justify-between">
                   <button
                     onClick={() => onEditPayment(company)}
-                    className="inline-flex items-center space-x-1 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 px-3 py-1 rounded-lg text-sm font-medium hover:bg-orange-200 dark:hover:bg-orange-900/50 transition-colors"
+                    className="inline-flex items-center space-x-1 m-2 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 px-3 py-1 rounded-lg text-sm font-medium hover:bg-orange-200 dark:hover:bg-orange-900/50 transition-colors"
                     title="Edit payments for this company"
                   >
                     <Edit3 className="w-3 h-3" />
+                  </button>
+                                    <button
+                   
+                    className="inline-flex items-center space-x-1 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 px-3 py-1 rounded-lg text-sm font-medium hover:bg-orange-200 dark:hover:bg-orange-900/50 transition-colors"
+                    title="Edit payments for this company"
+                  >
+                    <Trash2 className="w-3 h-3" />
                   </button>
                 </td>
               </tr>
