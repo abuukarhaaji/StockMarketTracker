@@ -17,14 +17,14 @@ export function FilterModal({ isOpen, onClose, onApplyFilter, currentMinAmount }
     const amount = minAmount ? parseFloat(minAmount) : undefined;
     onApplyFilter(amount);
     
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat('en-GB', {
-    style: 'currency',
-    currency: 'GBP',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
-}.format(amount);
+    if (amount !== undefined) {
+      const formatCurrency = (amount: number) => {
+        return new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: 'USD',
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0,
+        });.format(amount);
       };
       toast.success(`Filter applied: Showing companies that paid more than ${formatCurrency(amount)}`);
     }
