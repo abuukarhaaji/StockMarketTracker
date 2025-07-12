@@ -83,21 +83,23 @@ export function AnalyticsCards({ companies, selectedYear }: AnalyticsCardsProps)
         </div>
 
         {/* Total Income After Tax Card */}
-        <div className="bg-white dark:bg-navy-900 rounded-xl shadow-sm border border-gray-200 dark:border-navy-700 p-8">
+        <div className="bg-white dark:bg-navy-900 rounded-xl shadow-sm border border-gray-200 dark:border-navy-700 p-8 relative">
+          {/* Tax Rate Button - Top Right */}
+          <button
+            onClick={handleOpenModal}
+            className="absolute top-4 right-4 px-3 py-1 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
+          >
+            {taxRate}%
+          </button>
+          
           <div className="text-center">
             <div className="bg-blue-100 dark:bg-blue-900/30 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
               <Receipt className="w-8 h-8 text-blue-600 dark:text-blue-400" />
             </div>
             <p className="text-lg text-gray-600 dark:text-gray-300 mb-2">Total Income After Tax ({selectedYear})</p>
             <p className="text-4xl font-bold text-blue-600 dark:text-blue-400">{formatCurrency(totalIncomeAfterTax)}</p>
-            <div className="mt-4 space-y-2">
+            <div className="mt-4">
               <p className="text-sm text-gray-500 dark:text-gray-400">Tax Paid: {formatCurrency(taxPaid)}</p>
-              <button
-                onClick={handleOpenModal}
-                className="inline-flex items-center px-3 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
-              >
-                Tax Rate: {taxRate}%
-              </button>
             </div>
           </div>
         </div>
