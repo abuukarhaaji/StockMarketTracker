@@ -10,14 +10,14 @@ interface MonthlyBreakdownModalProps {
 }
 
 export function MonthlyBreakdownModal({ isOpen, onClose, companies, selectedYear }: MonthlyBreakdownModalProps) {
-const formatCurrency = (amount: number) => {
+  const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat('en-GB', {
     style: 'currency',
     currency: 'GBP',
     minimumFractionDigits: 0,
     maximumFractionDigits: 2,
   }).format(amount);
-};
+}
   };
 
   const months = [
@@ -55,9 +55,8 @@ const formatCurrency = (amount: number) => {
 
   const totalYearToDate = monthlyData.reduce((sum, data) => sum + data.totalAmount, 0);
 
-  if (!isOpen) {
-    return null
-  }
+  if (!isOpen) return null;
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white dark:bg-navy-900 rounded-2xl shadow-xl max-w-2xl w-full p-6 max-h-[80vh] overflow-hidden border border-gray-200 dark:border-navy-700">
