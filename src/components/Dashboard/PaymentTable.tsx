@@ -1,20 +1,22 @@
 import React from 'react';
 import { CompanyWithPayments } from '../../types';
-import { Building2 } from 'lucide-react';
+import { Building2, Edit3 } from 'lucide-react';
 
 interface PaymentTableProps {
   companies: CompanyWithPayments[];
   selectedYear: number;
+  onCompanyClick: (company: CompanyWithPayments) => void;
+  onEditPayment: (company: CompanyWithPayments) => void;
 }
 
-export function PaymentTable({ companies, selectedYear }: PaymentTableProps) {
+export function PaymentTable({ companies, selectedYear, onCompanyClick, onEditPayment }: PaymentTableProps) {
   const formatCurrency = (amount: number) => {
- return new Intl.NumberFormat('en-GB', {
-    style: 'currency',
-    currency: 'GBP',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
   };
 
   // Get all months for current year
@@ -75,17 +77,26 @@ export function PaymentTable({ companies, selectedYear }: PaymentTableProps) {
               <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900 dark:text-white bg-blue-50 dark:bg-navy-700">
                 Total
               </th>
+              <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900 dark:text-white bg-blue-50 dark:bg-navy-700">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody className="bg-white dark:bg-navy-900 divide-y divide-gray-200 dark:divide-navy-700">
             {companies.map((company, index) => (
               <tr key={company.id} className={index % 2 === 0 ? 'bg-white dark:bg-navy-900' : 'bg-gray-50 dark:bg-navy-800'}>
                 <td className="px-6 py-4 whitespace-nowrap border-r border-gray-200 dark:border-navy-600 sticky left-0 bg-inherit z-10">
-                  <div className="flex items-center">
+                  <div 
+                    className="flex items-center cursor-pointer hover:bg-blue-50 dark:hover:bg-navy-700 p-2 rounded-lg transition-colors"
+                    onClick={() => onCompanyClick(company)}
+                    title="Click to view payment history"
+                  >
                     <div className="bg-blue-100 dark:bg-navy-700 w-8 h-8 rounded-full flex items-center justify-center mr-3">
                       <Building2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                     </div>
-                    <div className="text-sm font-medium text-gray-900 dark:text-white">{company.name}</div>
+                    <div className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300">
+                      {company.name}
+                    </div>
                   </div>
                 </td>
                 {months.map((month, monthIndex) => {
@@ -106,6 +117,15 @@ export function PaymentTable({ companies, selectedYear }: PaymentTableProps) {
                   <span className="text-sm font-bold text-blue-600 dark:text-blue-400">
                     {formatCurrency(company.total_amount)}
                   </span>
+                </td>
+                <td className="px-6 py-4 text-center bg-blue-50 dark:bg-navy-700">
+                  <button
+                    onClick={() => onEditPayment(company)}
+                    className="inline-flex items-center space-x-1 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 px-3 py-1 rounded-lg text-sm font-medium hover:bg-orange-200 dark:hover:bg-orange-900/50 transition-colors"
+                    title="Edit payments for this company"
+                  >
+                    <Edit3 className="w-3 h-3" />
+                  </button>
                 </td>
               </tr>
             ))}
