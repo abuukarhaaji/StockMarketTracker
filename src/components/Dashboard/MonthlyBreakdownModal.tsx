@@ -17,7 +17,6 @@ export function MonthlyBreakdownModal({ isOpen, onClose, companies, selectedYear
     minimumFractionDigits: 0,
     maximumFractionDigits: 2,
   }).format(amount);
-}
   };
 
   const months = [
