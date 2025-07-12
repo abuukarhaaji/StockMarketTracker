@@ -138,8 +138,8 @@ export function AnalyticsCards({ companies, selectedYear }: AnalyticsCardsProps)
                 <input
                   type="text"
                   value={`${taxRate}%`}
-                  readOnly
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-navy-600 rounded-md bg-gray-50 dark:bg-navy-800 text-gray-900 dark:text-white"
+                  disabled
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-navy-600 rounded-md bg-gray-100 dark:bg-navy-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
                 />
               </div>
               
