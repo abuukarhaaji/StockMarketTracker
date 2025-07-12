@@ -125,7 +125,6 @@ export function PaymentTable({ companies, selectedYear, onCompanyClick, onEditPa
                     title="Edit payments for this company"
                   >
                     <Edit3 className="w-3 h-3" />
-                    <span>Edit</span>
                   </button>
                 </td>
               </tr>
