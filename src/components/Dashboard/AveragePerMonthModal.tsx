@@ -10,14 +10,14 @@ interface AveragePerMonthModalProps {
 }
 
 export function AveragePerMonthModal({ isOpen, onClose, companies, selectedYear }: AveragePerMonthModalProps) {
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
+const formatCurrency = (amount: number) => {
+  return new Intl.NumberFormat('en-GB', {
+    style: 'currency',
+    currency: 'GBP',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
+};
 
   const getCompanyAveragePerMonth = (company: CompanyWithPayments) => {
     if (company.payments.length === 0) return 0;
