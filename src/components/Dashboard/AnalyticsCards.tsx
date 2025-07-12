@@ -12,14 +12,14 @@ export function AnalyticsCards({ companies, selectedYear }: AnalyticsCardsProps)
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newTaxRate, setNewTaxRate] = useState('');
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
+const formatCurrency = (amount: number) => {
+  return new Intl.NumberFormat('en-GB', {
+    style: 'currency',
+    currency: 'GBP',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
+};
 
   // Calculate analytics
   const totalIncome = companies.reduce((sum, company) => sum + company.total_amount, 0);
