@@ -21,7 +21,7 @@ import { CompanyWithPayments } from '../../types';
 
 export function Dashboard() {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const { companies, loading, selectedYear: currentYear, addCompany, addPayment, deleteCompany, updateCompany, updatePayment } = useCompanies(selectedYear);
+  const { companies, loading, selectedYear: currentYear, addCompany, addPayment, deleteCompany, updateCompany, updatePayment, deletePayment } = useCompanies(selectedYear);
   const [showAddCompanyModal, setShowAddCompanyModal] = useState(false);
   const [showRecordPaymentModal, setShowRecordPaymentModal] = useState(false);
   const [showFilterModal, setShowFilterModal] = useState(false);
@@ -105,20 +105,7 @@ export function Dashboard() {
   };
 
   const confirmDeletePayment = async (paymentId: string) => {
-    // We'll need to add this function to the useCompanies hook
-    // For now, we'll implement it directly here
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
-
-    const { error } = await supabase
-      .from('payments')
-      .delete()
-      .eq('id', paymentId)
-      .eq('user_id', user.id);
-
-    if (error) throw error;
-    // Refresh the companies data
-    window.location.reload(); // Simple refresh for now
+    await deletePayment(paymentId);
   };
 
   const handleYearChange = (year: number) => {
