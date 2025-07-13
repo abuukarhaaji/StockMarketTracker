@@ -37,7 +37,6 @@ export function Dashboard() {
   const [companyToDelete, setCompanyToDelete] = useState<CompanyWithPayments | null>(null);
   const [companyToEdit, setCompanyToEdit] = useState<CompanyWithPayments | null>(null);
   const [selectedCompanyForHistory, setSelectedCompanyForHistory] = useState<CompanyWithPayments | null>(null);
-  const [selectedCompanyForEditPayment, setSelectedCompanyForEditPayment] = useState<CompanyWithPayments | null>(null);
   const [minAmount, setMinAmount] = useState<number | undefined>(undefined);
   const [sortByTopPaid, setSortByTopPaid] = useState(false);
 
@@ -374,12 +373,18 @@ export function Dashboard() {
         isOpen={showEditPaymentModal}
         onClose={() => {
           setShowEditPaymentModal(false);
-          setSelectedCompanyForEditPayment(null);
         }}
         onSubmit={confirmEditPayment}
-        company={selectedCompanyForEditPayment}
+        companies={companies}
         selectedYear={selectedYear}
       />
     </div>
+      <DeletePaymentModal
+        isOpen={showDeletePaymentModal}
+        onClose={() => setShowDeletePaymentModal(false)}
+        onSubmit={confirmDeletePayment}
+        companies={companies}
+        selectedYear={selectedYear}
+      />
   );
 }
