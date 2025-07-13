@@ -378,13 +378,14 @@ export function Dashboard() {
         companies={companies}
         selectedYear={selectedYear}
       />
-    </div>
-      <DeletePaymentModal
+            <DeletePaymentModal
         isOpen={showDeletePaymentModal}
         onClose={() => setShowDeletePaymentModal(false)}
         onSubmit={confirmDeletePayment}
         companies={companies}
         selectedYear={selectedYear}
       />
+    </div>
+
   );
 }
