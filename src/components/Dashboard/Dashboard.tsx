@@ -15,8 +15,10 @@ import { SelectCompanyModal } from './SelectCompanyModal';
 import { EditCompanyModal } from './EditCompanyModal';
 import { CompanyPaymentHistoryModal } from './CompanyPaymentHistoryModal';
 import { EditPaymentModal } from './EditPaymentModal';
+import { DeletePaymentModal } from './DeletePaymentModal';
 import { Plus, Receipt, Filter, Calendar, TrendingDown, BarChart3, Trash2, Edit3 } from 'lucide-react';
 import { CompanyWithPayments } from '../../types';
+import { supabase } from '../../lib/supabase';
 
 export function Dashboard() {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
@@ -32,6 +34,7 @@ export function Dashboard() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showPaymentHistoryModal, setShowPaymentHistoryModal] = useState(false);
   const [showEditPaymentModal, setShowEditPaymentModal] = useState(false);
+  const [showDeletePaymentModal, setShowDeletePaymentModal] = useState(false);
   const [companyToDelete, setCompanyToDelete] = useState<CompanyWithPayments | null>(null);
   const [companyToEdit, setCompanyToEdit] = useState<CompanyWithPayments | null>(null);
   const [selectedCompanyForHistory, setSelectedCompanyForHistory] = useState<CompanyWithPayments | null>(null);
@@ -92,13 +95,34 @@ export function Dashboard() {
   };
 
   const handleEditPayment = (company: CompanyWithPayments) => {
-    setSelectedCompanyForEditPayment(company);
     setShowEditPaymentModal(true);
   };
 
   const confirmEditPayment = async (paymentId: string, amount: number) => {
     await updatePayment(paymentId, amount);
   };
+
+  const handleDeletePayment = () => {
+    setShowDeletePaymentModal(true);
+  };
+
+  const confirmDeletePayment = async (paymentId: string) => {
+    // We'll need to add this function to the useCompanies hook
+    // For now, we'll implement it directly here
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
+    const { error } = await supabase
+      .from('payments')
+      .delete()
+      .eq('id', paymentId)
+      .eq('user_id', user.id);
+
+    if (error) throw error;
+    // Refresh the companies data
+    window.location.reload(); // Simple refresh for now
+  };
+
   const handleYearChange = (year: number) => {
     setSelectedYear(year);
     // Reset filters when year changes
@@ -148,6 +172,24 @@ export function Dashboard() {
           >
             <Edit3 className="w-5 h-5" />
             <span>Edit Company Name</span>
+          </button>
+
+          <button
+            onClick={handleEditPayment}
+            disabled={companies.length === 0}
+            className="flex items-center justify-center space-x-2 bg-purple-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Edit3 className="w-5 h-5" />
+            <span>Edit Payment</span>
+          </button>
+
+          <button
+            onClick={handleDeletePayment}
+            disabled={companies.length === 0}
+            className="flex items-center justify-center space-x-2 bg-pink-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-pink-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Trash2 className="w-5 h-5" />
+            <span>Delete Payment</span>
           </button>
         </div>
 

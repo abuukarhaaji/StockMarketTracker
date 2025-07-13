@@ -1,15 +1,14 @@
 import React from 'react';
 import { CompanyWithPayments } from '../../types';
-import { Building2, Edit3, Trash2 } from 'lucide-react';
+import { Building2 } from 'lucide-react';
 
 interface PaymentTableProps {
   companies: CompanyWithPayments[];
   selectedYear: number;
   onCompanyClick: (company: CompanyWithPayments) => void;
-  onEditPayment: (company: CompanyWithPayments) => void;
 }
 
-export function PaymentTable({ companies, selectedYear, onCompanyClick, onEditPayment }: PaymentTableProps) {
+export function PaymentTable({ companies, selectedYear, onCompanyClick }: PaymentTableProps) {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -77,9 +76,6 @@ export function PaymentTable({ companies, selectedYear, onCompanyClick, onEditPa
               <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900 dark:text-white bg-blue-50 dark:bg-navy-700">
                 Total
               </th>
-              <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900 dark:text-white bg-blue-50 dark:bg-navy-700">
-                Actions
-              </th>
             </tr>
           </thead>
           <tbody className="bg-white dark:bg-navy-900 divide-y divide-gray-200 dark:divide-navy-700">
@@ -117,22 +113,6 @@ export function PaymentTable({ companies, selectedYear, onCompanyClick, onEditPa
                   <span className="text-sm font-bold text-blue-600 dark:text-blue-400">
                     {formatCurrency(company.total_amount)}
                   </span>
-                </td>
-                <td className="px-6 py-4 text-center bg-blue-50 dark:bg-navy-700 flex justify-between">
-                  <button
-                    onClick={() => onEditPayment(company)}
-                    className="inline-flex items-center space-x-1 m-2 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 px-3 py-1 rounded-lg text-sm font-medium hover:bg-orange-200 dark:hover:bg-orange-900/50 transition-colors"
-                    title="Edit payments for this company"
-                  >
-                    <Edit3 className="w-3 h-3" />
-                  </button>
-                                    <button
-                   
-                    className="inline-flex items-center space-x-1 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 px-3 py-1 rounded-lg text-sm font-medium hover:bg-orange-200 dark:hover:bg-orange-900/50 transition-colors"
-                    title="Edit payments for this company"
-                  >
-                    <Trash2 className="w-3 h-3" />
-                  </button>
                 </td>
               </tr>
             ))}
