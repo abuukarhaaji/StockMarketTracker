@@ -7,23 +7,25 @@ interface EditPaymentModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (paymentId: string, amount: number) => Promise<void>;
-  company: CompanyWithPayments | null;
+  companies: CompanyWithPayments[];
   selectedYear: number;
 }
 
-export function EditPaymentModal({ isOpen, onClose, onSubmit, company, selectedYear }: EditPaymentModalProps) {
+export function EditPaymentModal({ isOpen, onClose, onSubmit, companies, selectedYear }: EditPaymentModalProps) {
+  const [selectedCompanyId, setSelectedCompanyId] = useState('');
   const [selectedPaymentId, setSelectedPaymentId] = useState('');
   const [newAmount, setNewAmount] = useState('');
   const [loading, setLoading] = useState(false);
 
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat('en-GB', {
-    style: 'currency',
-    currency: 'GBP',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
-  }).format(amount);
-};
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-GB', {
+      style: 'currency',
+      currency: 'GBP',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    }).format(amount);
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -32,20 +34,28 @@ const formatCurrency = (amount: number) => {
     });
   };
 
-  if (!isOpen || !company) return null;
+  if (!isOpen) return null;
 
+  // Get selected company
+  const selectedCompany = companies.find(c => c.id === selectedCompanyId);
+  
   // Filter payments for the selected year
-  const yearPayments = company.payments
+  const yearPayments = selectedCompany ? selectedCompany.payments
     .filter(payment => {
       const paymentDate = new Date(payment.payment_date);
       return paymentDate.getFullYear() === selectedYear;
     })
-    .sort((a, b) => new Date(b.payment_date).getTime() - new Date(a.payment_date).getTime());
+    .sort((a, b) => new Date(b.payment_date).getTime() - new Date(a.payment_date).getTime()) : [];
 
   const selectedPayment = yearPayments.find(p => p.id === selectedPaymentId);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!selectedCompanyId) {
+      toast.error('Please select a company');
+      return;
+    }
     
     if (!selectedPaymentId) {
       toast.error('Please select a payment to edit');
@@ -82,9 +92,16 @@ const formatCurrency = (amount: number) => {
   };
 
   const handleClose = () => {
+    setSelectedCompanyId('');
     setSelectedPaymentId('');
     setNewAmount('');
     onClose();
+  };
+
+  const handleCompanySelect = (companyId: string) => {
+    setSelectedCompanyId(companyId);
+    setSelectedPaymentId(''); // Reset payment selection when company changes
+    setNewAmount(''); // Reset amount when company changes
   };
 
   const handlePaymentSelect = (paymentId: string) => {
@@ -119,7 +136,7 @@ const formatCurrency = (amount: number) => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="company-select" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Select Company
+              Company Name
             </label>
             <select
               id="company-select"
@@ -138,86 +155,89 @@ const formatCurrency = (amount: number) => {
             </select>
           </div>
 
-            <div>
-              <label htmlFor="payment-select" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Select Payment to Edit
-              </label>
-              <select
-                id="payment-select"
-                value={selectedPaymentId}
-                onChange={(e) => handlePaymentSelect(e.target.value)}
-                required
-                disabled={!selectedCompanyId || yearPayments.length === 0 || loading}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-navy-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors bg-white dark:bg-navy-800 text-gray-900 dark:text-white disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <option value="">
-                  {!selectedCompanyId 
-                    ? "Select a company first" 
-                    : yearPayments.length === 0 
-                      ? `No payments in ${selectedYear}` 
-                      : "Select a payment"}
+          <div>
+            <label htmlFor="payment-select" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Payments from Selected Company
+            </label>
+            <select
+              id="payment-select"
+              value={selectedPaymentId}
+              onChange={(e) => handlePaymentSelect(e.target.value)}
+              required
+              disabled={!selectedCompanyId || yearPayments.length === 0 || loading}
+              className="w-full px-4 py-3 border border-gray-300 dark:border-navy-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors bg-white dark:bg-navy-800 text-gray-900 dark:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <option value="">
+                {!selectedCompanyId 
+                  ? "Select a company first" 
+                  : yearPayments.length === 0 
+                    ? `No payments in ${selectedYear}` 
+                    : "Select a payment"}
+              </option>
+              {yearPayments.map((payment) => (
+                <option key={payment.id} value={payment.id}>
+                  {formatDate(payment.payment_date)} - {formatCurrency(payment.amount)}
                 </option>
-                {yearPayments.map((payment) => (
-                  <option key={payment.id} value={payment.id}>
-                    {formatDate(payment.payment_date)} - {formatCurrency(payment.amount)}
-                  </option>
-                ))}
-              </select>
-            </div>
+              ))}
+            </select>
+          </div>
 
-            {selectedPayment && (
-              <div className="p-4 bg-gray-50 dark:bg-navy-800 rounded-lg">
-                <h4 className="font-medium text-gray-900 dark:text-white mb-2">Current Payment Details</h4>
-                <div className="space-y-1 text-sm">
-                  <p className="text-gray-600 dark:text-gray-300">
-                    <span className="font-medium">Company:</span> {selectedCompany?.name}
-                  </p>
-                  <p className="text-gray-600 dark:text-gray-300">
-                    <span className="font-medium">Date:</span> {formatDate(selectedPayment.payment_date)}
-                  </p>
-                  <p className="text-gray-600 dark:text-gray-300">
-                    <span className="font-medium">Current Amount:</span> {formatCurrency(selectedPayment.amount)}
-                  </p>
-                </div>
+          {selectedPayment && (
+            <div className="p-4 bg-gray-50 dark:bg-navy-800 rounded-lg">
+              <h4 className="font-medium text-gray-900 dark:text-white mb-2 flex items-center">
+                <Calendar className="w-4 h-4 mr-2" />
+                Payment Details
+              </h4>
+              <div className="space-y-1 text-sm">
+                <p className="text-gray-600 dark:text-gray-300">
+                  <span className="font-medium">Company:</span> {selectedCompany?.name}
+                </p>
+                <p className="text-gray-600 dark:text-gray-300">
+                  <span className="font-medium">Payment Date:</span> {formatDate(selectedPayment.payment_date)}
+                </p>
+                <p className="text-gray-600 dark:text-gray-300">
+                  <span className="font-medium">Current Amount:</span> {formatCurrency(selectedPayment.amount)}
+                </p>
               </div>
-            )}
-
-            <div>
-              <label htmlFor="new-amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                New Payment Amount
-              </label>
-              <input
-                id="new-amount"
-                type="number"
-                step="0.01"
-                min="0"
-                value={newAmount}
-                onChange={(e) => setNewAmount(e.target.value)}
-                required
-                className="w-full px-4 py-3 border border-gray-300 dark:border-navy-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors bg-white dark:bg-navy-800 text-gray-900 dark:text-white"
-                placeholder="0.00"
-                disabled={loading || !selectedPaymentId}
-              />
             </div>
+          )}
 
-            <div className="flex space-x-3 pt-4">
-              <button
-                type="button"
-                onClick={handleClose}
-                className="flex-1 px-4 py-3 border border-gray-300 dark:border-navy-600 rounded-lg text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-navy-800 transition-colors"
-                disabled={loading}
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={loading || !selectedCompanyId || !selectedPaymentId || !newAmount}
-                className="flex-1 px-4 py-3 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                {loading ? 'Updating...' : 'Save Changes'}
-              </button>
-            </div>
-          </form>
+          <div>
+            <label htmlFor="new-amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              New Payment Amount
+            </label>
+            <input
+              id="new-amount"
+              type="number"
+              step="0.01"
+              min="0"
+              value={newAmount}
+              onChange={(e) => setNewAmount(e.target.value)}
+              required
+              className="w-full px-4 py-3 border border-gray-300 dark:border-navy-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors bg-white dark:bg-navy-800 text-gray-900 dark:text-white"
+              placeholder="0.00"
+              disabled={loading || !selectedPaymentId}
+            />
+          </div>
+
+          <div className="flex space-x-3 pt-4">
+            <button
+              type="button"
+              onClick={handleClose}
+              className="flex-1 px-4 py-3 border border-gray-300 dark:border-navy-600 rounded-lg text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-navy-800 transition-colors"
+              disabled={loading}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={loading || !selectedCompanyId || !selectedPaymentId || !newAmount}
+              className="flex-1 px-4 py-3 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              {loading ? 'Updating...' : 'Save Changes'}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
