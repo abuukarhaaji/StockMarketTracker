@@ -204,7 +204,7 @@ export function Dashboard() {
             className="flex items-center space-x-2 bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors"
           >
             <BarChart3 className="w-4 h-4" />
-            <span>Dividend by month</span>
+            <span>Passive Income</span>
           </button>
 
           <button
