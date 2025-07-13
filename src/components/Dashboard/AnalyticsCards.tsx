@@ -137,7 +137,7 @@ const formatCurrency = (amount: number) => {
                 </label>
                 <input
                   type="text"
-                  value={`£{taxRate}%`}
+                  value={`${taxRate}%`}
                   disabled
                   className="w-full px-3 py-2 border border-gray-300 dark:border-navy-600 rounded-md bg-gray-100 dark:bg-navy-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
                 />
