@@ -67,7 +67,7 @@ const formatCurrency = (amount: number) => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="min-amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Minimum Total Amount ($)
+              Minimum Total Amount (£)
             </label>
             <input
               id="min-amount"
