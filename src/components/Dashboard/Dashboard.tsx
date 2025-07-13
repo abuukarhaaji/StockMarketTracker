@@ -18,7 +18,6 @@ import { EditPaymentModal } from './EditPaymentModal';
 import { DeletePaymentModal } from './DeletePaymentModal';
 import { Plus, Receipt, Filter, Calendar, TrendingDown, BarChart3, Trash2, Edit3 } from 'lucide-react';
 import { CompanyWithPayments } from '../../types';
-import { supabase } from '../../lib/supabase';
 
 export function Dashboard() {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());

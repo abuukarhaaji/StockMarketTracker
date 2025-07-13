@@ -105,7 +105,7 @@ const formatCurrency = (amount: number) => {
             </div>
             <div>
               <h2 className="text-xl font-bold text-gray-900 dark:text-white">Edit Payment</h2>
-              <p className="text-sm text-gray-600 dark:text-gray-300">{company.name} - {selectedYear}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Select payment to edit - {selectedYear}</p>
             </div>
           </div>
           <button
@@ -116,20 +116,28 @@ const formatCurrency = (amount: number) => {
           </button>
         </div>
 
-        {yearPayments.length === 0 ? (
-          <div className="text-center py-8">
-            <div className="bg-gray-100 dark:bg-navy-800 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Calendar className="w-8 h-8 text-gray-400 dark:text-gray-500" />
-            </div>
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-              No payments in {selectedYear}
-            </h3>
-            <p className="text-gray-600 dark:text-gray-300">
-              No payments to edit for {company.name} in {selectedYear}
-            </p>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="company-select" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Select Company
+            </label>
+            <select
+              id="company-select"
+              value={selectedCompanyId}
+              onChange={(e) => handleCompanySelect(e.target.value)}
+              required
+              className="w-full px-4 py-3 border border-gray-300 dark:border-navy-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors bg-white dark:bg-navy-800 text-gray-900 dark:text-white"
+              disabled={loading}
+            >
+              <option value="">Select a company</option>
+              {companies.map((company) => (
+                <option key={company.id} value={company.id}>
+                  {company.name}
+                </option>
+              ))}
+            </select>
           </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
+
             <div>
               <label htmlFor="payment-select" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Select Payment to Edit
@@ -139,10 +147,16 @@ const formatCurrency = (amount: number) => {
                 value={selectedPaymentId}
                 onChange={(e) => handlePaymentSelect(e.target.value)}
                 required
-                className="w-full px-4 py-3 border border-gray-300 dark:border-navy-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors bg-white dark:bg-navy-800 text-gray-900 dark:text-white"
-                disabled={loading}
+                disabled={!selectedCompanyId || yearPayments.length === 0 || loading}
+                className="w-full px-4 py-3 border border-gray-300 dark:border-navy-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors bg-white dark:bg-navy-800 text-gray-900 dark:text-white disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <option value="">Select a payment</option>
+                <option value="">
+                  {!selectedCompanyId 
+                    ? "Select a company first" 
+                    : yearPayments.length === 0 
+                      ? `No payments in ${selectedYear}` 
+                      : "Select a payment"}
+                </option>
                 {yearPayments.map((payment) => (
                   <option key={payment.id} value={payment.id}>
                     {formatDate(payment.payment_date)} - {formatCurrency(payment.amount)}
@@ -155,6 +169,9 @@ const formatCurrency = (amount: number) => {
               <div className="p-4 bg-gray-50 dark:bg-navy-800 rounded-lg">
                 <h4 className="font-medium text-gray-900 dark:text-white mb-2">Current Payment Details</h4>
                 <div className="space-y-1 text-sm">
+                  <p className="text-gray-600 dark:text-gray-300">
+                    <span className="font-medium">Company:</span> {selectedCompany?.name}
+                  </p>
                   <p className="text-gray-600 dark:text-gray-300">
                     <span className="font-medium">Date:</span> {formatDate(selectedPayment.payment_date)}
                   </p>
@@ -194,14 +211,13 @@ const formatCurrency = (amount: number) => {
               </button>
               <button
                 type="submit"
-                disabled={loading || !selectedPaymentId || !newAmount}
+                disabled={loading || !selectedCompanyId || !selectedPaymentId || !newAmount}
                 className="flex-1 px-4 py-3 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {loading ? 'Updating...' : 'Save Changes'}
               </button>
             </div>
           </form>
-        )}
       </div>
     </div>
   );

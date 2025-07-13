@@ -124,6 +124,21 @@ export function useCompanies(selectedYear?: number) {
     if (error) throw error;
     await fetchCompanies();
   };
+
+  const deletePayment = async (payment_id: string) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
+    const { error } = await supabase
+      .from('payments')
+      .delete()
+      .eq('id', payment_id)
+      .eq('user_id', user.id);
+
+    if (error) throw error;
+    await fetchCompanies();
+  };
+
   return {
     companies,
     loading,
@@ -133,6 +148,7 @@ export function useCompanies(selectedYear?: number) {
     deleteCompany,
     updateCompany,
     updatePayment,
+    deletePayment,
     refreshCompanies: fetchCompanies,
   };
 }
