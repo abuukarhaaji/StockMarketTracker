@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { X, Building2 } from 'lucide-react';
-import { CompanyWithPayments } from '../../types';
+import { CompanyWithPayments, IsaCompanyWithPayments } from '../../types';
 
 interface SelectCompanyModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectCompany: (company: CompanyWithPayments) => void;
-  companies: CompanyWithPayments[];
+  onSelectCompany: (company: CompanyWithPayments | IsaCompanyWithPayments) => void;
+  companies: (CompanyWithPayments | IsaCompanyWithPayments)[];
   title: string;
   description: string;
   actionButtonText: string;
@@ -23,7 +23,7 @@ export function SelectCompanyModal({
   actionButtonText,
   actionButtonColor = 'blue'
 }: SelectCompanyModalProps) {
-  const [selectedCompany, setSelectedCompany] = useState<CompanyWithPayments | null>(null);
+  const [selectedCompany, setSelectedCompany] = useState<CompanyWithPayments | IsaCompanyWithPayments | null>(null);
 
   const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat('en-GB', {

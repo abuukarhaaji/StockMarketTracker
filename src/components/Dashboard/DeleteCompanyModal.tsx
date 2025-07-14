@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 import { X, Trash2, AlertTriangle } from 'lucide-react';
-import { CompanyWithPayments } from '../../types';
+import { CompanyWithPayments, IsaCompanyWithPayments } from '../../types';
 
 interface DeleteCompanyModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: (companyId: string) => Promise<void>;
-  company: CompanyWithPayments | null;
+  company: CompanyWithPayments | IsaCompanyWithPayments | null;
 }
 
 export function DeleteCompanyModal({ isOpen, onClose, onConfirm, company }: DeleteCompanyModalProps) {

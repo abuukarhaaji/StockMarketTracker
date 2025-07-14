@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 import { X, Edit3 } from 'lucide-react';
-import { CompanyWithPayments } from '../../types';
+import { CompanyWithPayments, IsaCompanyWithPayments } from '../../types';
 
 interface EditCompanyModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (companyId: string, name: string) => Promise<void>;
-  company: CompanyWithPayments | null;
+  company: CompanyWithPayments | IsaCompanyWithPayments | null;
 }
 
 export function EditCompanyModal({ isOpen, onClose, onSubmit, company }: EditCompanyModalProps) {

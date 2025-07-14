@@ -1,11 +1,11 @@
 import React from 'react';
-import { CompanyWithPayments } from '../../types';
+import { CompanyWithPayments, IsaCompanyWithPayments } from '../../types';
 import { Building2 } from 'lucide-react';
 
 interface PaymentTableProps {
-  companies: CompanyWithPayments[];
+  companies: (CompanyWithPayments | IsaCompanyWithPayments)[];
   selectedYear: number;
-  onCompanyClick: (company: CompanyWithPayments) => void;
+  onCompanyClick: (company: CompanyWithPayments | IsaCompanyWithPayments) => void;
 }
 
 export function PaymentTable({ companies, selectedYear, onCompanyClick }: PaymentTableProps) {
