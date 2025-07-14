@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { X, BarChart3, Calendar, TrendingUp, TrendingDown } from 'lucide-react';
-import { CompanyWithPayments, IsaCompanyWithPayments } from '../../types';
+import { supabase } from '../../lib/supabase';
+import { TabType } from '../../types';
 
 interface CompareYearsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  allCompanies: (CompanyWithPayments | IsaCompanyWithPayments)[];
   tabType: 'all' | 'isa';
 }
 
@@ -15,10 +15,17 @@ interface YearlyData {
   };
 }
 
-export function CompareYearsModal({ isOpen, onClose, allCompanies, tabType }: CompareYearsModalProps) {
+interface Payment {
+  amount: number;
+  payment_date: string;
+}
+
+export function CompareYearsModal({ isOpen, onClose, tabType }: CompareYearsModalProps) {
   const currentYear = new Date().getFullYear();
   const [year1, setYear1] = useState(currentYear - 1);
   const [year2, setYear2] = useState(currentYear);
+  const [loading, setLoading] = useState(false);
+  const [yearlyData, setYearlyData] = useState<YearlyData>({});
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-GB', {
@@ -43,41 +50,86 @@ export function CompareYearsModal({ isOpen, onClose, allCompanies, tabType }: Co
     'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
-  // Process payment data for both years
-  const getYearlyData = (): YearlyData => {
-    const yearlyData: YearlyData = {
-      [year1]: {},
-      [year2]: {}
-    };
+  // Fetch payment data for both selected years
+  const fetchYearlyData = async () => {
+    if (!isOpen) return;
+    
+    setLoading(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-    // Initialize months with 0
-    [year1, year2].forEach(year => {
-      for (let month = 0; month < 12; month++) {
-        yearlyData[year][month] = 0;
-      }
-    });
+      // Determine which table to query based on tab type
+      const paymentsTable = tabType === 'all' ? 'payments' : 'isa_payments';
+      
+      // Get start and end dates for both years
+      const year1Start = `${year1}-01-01`;
+      const year1End = `${year1}-12-31`;
+      const year2Start = `${year2}-01-01`;
+      const year2End = `${year2}-12-31`;
 
-    // Process all payments
-    allCompanies.forEach(company => {
-      company.payments.forEach(payment => {
-        const paymentDate = new Date(payment.payment_date);
-        const paymentYear = paymentDate.getFullYear();
-        const paymentMonth = paymentDate.getMonth();
+      // Fetch payments for both years in parallel
+      const [year1Response, year2Response] = await Promise.all([
+        supabase
+          .from(paymentsTable)
+          .select('amount, payment_date')
+          .eq('user_id', user.id)
+          .gte('payment_date', year1Start)
+          .lte('payment_date', year1End),
+        supabase
+          .from(paymentsTable)
+          .select('amount, payment_date')
+          .eq('user_id', user.id)
+          .gte('payment_date', year2Start)
+          .lte('payment_date', year2End)
+      ]);
 
-        if (paymentYear === year1 || paymentYear === year2) {
-          yearlyData[paymentYear][paymentMonth] += payment.amount;
+      if (year1Response.error) throw year1Response.error;
+      if (year2Response.error) throw year2Response.error;
+
+      // Initialize yearly data structure
+      const newYearlyData: YearlyData = {
+        [year1]: {},
+        [year2]: {}
+      };
+
+      // Initialize months with 0
+      [year1, year2].forEach(year => {
+        for (let month = 0; month < 12; month++) {
+          newYearlyData[year][month] = 0;
         }
       });
-    });
 
-    return yearlyData;
+      // Process year 1 payments
+      year1Response.data?.forEach((payment: Payment) => {
+        const paymentDate = new Date(payment.payment_date);
+        const paymentMonth = paymentDate.getMonth();
+        newYearlyData[year1][paymentMonth] += payment.amount;
+      });
+
+      // Process year 2 payments
+      year2Response.data?.forEach((payment: Payment) => {
+        const paymentDate = new Date(payment.payment_date);
+        const paymentMonth = paymentDate.getMonth();
+        newYearlyData[year2][paymentMonth] += payment.amount;
+      });
+
+      setYearlyData(newYearlyData);
+    } catch (error) {
+      console.error('Error fetching yearly data:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const yearlyData = getYearlyData();
+  // Fetch data when modal opens or years change
+  useEffect(() => {
+    fetchYearlyData();
+  }, [isOpen, year1, year2, tabType]);
 
   // Calculate totals
-  const year1Total = Object.values(yearlyData[year1]).reduce((sum, amount) => sum + amount, 0);
-  const year2Total = Object.values(yearlyData[year2]).reduce((sum, amount) => sum + amount, 0);
+  const year1Total = yearlyData[year1] ? Object.values(yearlyData[year1]).reduce((sum, amount) => sum + amount, 0) : 0;
+  const year2Total = yearlyData[year2] ? Object.values(yearlyData[year2]).reduce((sum, amount) => sum + amount, 0) : 0;
   const totalDifference = year2Total - year1Total;
   const totalPercentageChange = year1Total > 0 ? ((totalDifference / year1Total) * 100) : 0;
 
@@ -150,6 +202,12 @@ export function CompareYearsModal({ isOpen, onClose, allCompanies, tabType }: Co
 
         {/* Comparison Table */}
         <div className="overflow-y-auto max-h-[60vh]">
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <span className="ml-3 text-gray-600 dark:text-gray-300">Loading comparison data...</span>
+            </div>
+          ) : (
           <div className="bg-white dark:bg-navy-900 rounded-xl shadow-sm border border-gray-200 dark:border-navy-700 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="min-w-full">
@@ -174,8 +232,8 @@ export function CompareYearsModal({ isOpen, onClose, allCompanies, tabType }: Co
                 </thead>
                 <tbody className="bg-white dark:bg-navy-900 divide-y divide-gray-200 dark:divide-navy-700">
                   {months.map((month, index) => {
-                    const year1Amount = yearlyData[year1][index] || 0;
-                    const year2Amount = yearlyData[year2][index] || 0;
+                    const year1Amount = yearlyData[year1]?.[index] || 0;
+                    const year2Amount = yearlyData[year2]?.[index] || 0;
                     const difference = year2Amount - year1Amount;
                     const percentageChange = year1Amount > 0 ? ((difference / year1Amount) * 100) : 
                       (year1Amount === 0 && year2Amount > 0) ? 100 : 0;
@@ -260,6 +318,7 @@ export function CompareYearsModal({ isOpen, onClose, allCompanies, tabType }: Co
               </table>
             </div>
           </div>
+          )}
         </div>
       </div>
     </div>

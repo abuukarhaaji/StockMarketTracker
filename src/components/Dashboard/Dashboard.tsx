@@ -434,7 +434,6 @@ export function Dashboard() {
       <CompareYearsModal
         isOpen={showCompareYearsModal}
         onClose={() => setShowCompareYearsModal(false)}
-        allCompanies={companies}
         tabType={activeTab}
       />
     </div>
