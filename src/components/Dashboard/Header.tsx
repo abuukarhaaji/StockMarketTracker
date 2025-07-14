@@ -1,9 +1,16 @@
 import React from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../contexts/ThemeContext';
+import { TabSelector } from './TabSelector';
 import { LogOut, TrendingUp, Moon, Sun } from 'lucide-react';
+import { TabType } from '../../types';
 
-export function Header() {
+interface HeaderProps {
+  activeTab: TabType;
+  onTabChange: (tab: TabType) => void;
+}
+
+export function Header({ activeTab, onTabChange }: HeaderProps) {
   const { user, signOut } = useAuth();
   const { isDarkMode, toggleDarkMode } = useTheme();
 
@@ -23,6 +30,8 @@ export function Header() {
               Investment Tracker
             </h1>
           </div>
+          
+          <TabSelector activeTab={activeTab} onTabChange={onTabChange} />
           
           <div className="flex items-center space-x-4">
             <span className="hidden lg:block text-sm text-gray-600 dark:text-gray-300">

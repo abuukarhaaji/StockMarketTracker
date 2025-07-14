@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 import { X, Trash2, Calendar, DollarSign } from 'lucide-react';
-import { CompanyWithPayments, Payment } from '../../types';
+import { CompanyWithPayments, IsaCompanyWithPayments, Payment, IsaPayment } from '../../types';
 
 interface DeletePaymentModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (paymentId: string) => Promise<void>;
-  companies: CompanyWithPayments[];
+  companies: (CompanyWithPayments | IsaCompanyWithPayments)[];
   selectedYear: number;
 }
 

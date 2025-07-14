@@ -1,11 +1,11 @@
 import React from 'react';
 import { X, Calendar, TrendingUp } from 'lucide-react';
-import { CompanyWithPayments } from '../../types';
+import { CompanyWithPayments, IsaCompanyWithPayments } from '../../types';
 
 interface MonthlyBreakdownModalProps {
   isOpen: boolean;
   onClose: () => void;
-  companies: CompanyWithPayments[];
+  companies: (CompanyWithPayments | IsaCompanyWithPayments)[];
   selectedYear: number;
 }
 

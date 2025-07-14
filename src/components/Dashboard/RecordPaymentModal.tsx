@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 import { X, DollarSign } from 'lucide-react';
-import { Company } from '../../types';
+import { Company, IsaCompany } from '../../types';
 
 interface RecordPaymentModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (companyId: string, amount: number, date: string) => Promise<void>;
-  companies: Company[];
+  companies: (Company | IsaCompany)[];
 }
 
 export function RecordPaymentModal({ isOpen, onClose, onSubmit, companies }: RecordPaymentModalProps) {

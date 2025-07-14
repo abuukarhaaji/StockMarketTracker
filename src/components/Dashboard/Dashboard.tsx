@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useCompanies } from '../../hooks/useCompanies';
+import { useIsaCompanies } from '../../hooks/useIsaCompanies';
 import { Header } from './Header';
 import { PaymentTable } from './PaymentTable';
 import { AnalyticsCards } from './AnalyticsCards';
@@ -17,11 +18,46 @@ import { CompanyPaymentHistoryModal } from './CompanyPaymentHistoryModal';
 import { EditPaymentModal } from './EditPaymentModal';
 import { DeletePaymentModal } from './DeletePaymentModal';
 import { Plus, Receipt, Filter, Calendar, TrendingDown, BarChart3, Trash2, Edit3 } from 'lucide-react';
-import { CompanyWithPayments } from '../../types';
+import { CompanyWithPayments, IsaCompanyWithPayments, TabType } from '../../types';
 
 export function Dashboard() {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const { companies, loading, selectedYear: currentYear, addCompany, addPayment, deleteCompany, updateCompany, updatePayment, deletePayment } = useCompanies(selectedYear);
+  const [activeTab, setActiveTab] = useState<TabType>('all');
+  
+  // Regular stocks data
+  const { 
+    companies: allCompanies, 
+    loading: allLoading, 
+    addCompany: addAllCompany, 
+    addPayment: addAllPayment, 
+    deleteCompany: deleteAllCompany, 
+    updateCompany: updateAllCompany, 
+    updatePayment: updateAllPayment, 
+    deletePayment: deleteAllPayment 
+  } = useCompanies(selectedYear);
+  
+  // ISA stocks data
+  const { 
+    companies: isaCompanies, 
+    loading: isaLoading, 
+    addCompany: addIsaCompany, 
+    addPayment: addIsaPayment, 
+    deleteCompany: deleteIsaCompany, 
+    updateCompany: updateIsaCompany, 
+    updatePayment: updateIsaPayment, 
+    deletePayment: deleteIsaPayment 
+  } = useIsaCompanies(selectedYear);
+  
+  // Current data based on active tab
+  const companies = activeTab === 'all' ? allCompanies : isaCompanies;
+  const loading = activeTab === 'all' ? allLoading : isaLoading;
+  const addCompany = activeTab === 'all' ? addAllCompany : addIsaCompany;
+  const addPayment = activeTab === 'all' ? addAllPayment : addIsaPayment;
+  const deleteCompany = activeTab === 'all' ? deleteAllCompany : deleteIsaCompany;
+  const updateCompany = activeTab === 'all' ? updateAllCompany : updateIsaCompany;
+  const updatePayment = activeTab === 'all' ? updateAllPayment : updateIsaPayment;
+  const deletePayment = activeTab === 'all' ? deleteAllPayment : deleteIsaPayment;
+  
   const [showAddCompanyModal, setShowAddCompanyModal] = useState(false);
   const [showRecordPaymentModal, setShowRecordPaymentModal] = useState(false);
   const [showFilterModal, setShowFilterModal] = useState(false);
@@ -34,9 +70,9 @@ export function Dashboard() {
   const [showPaymentHistoryModal, setShowPaymentHistoryModal] = useState(false);
   const [showEditPaymentModal, setShowEditPaymentModal] = useState(false);
   const [showDeletePaymentModal, setShowDeletePaymentModal] = useState(false);
-  const [companyToDelete, setCompanyToDelete] = useState<CompanyWithPayments | null>(null);
-  const [companyToEdit, setCompanyToEdit] = useState<CompanyWithPayments | null>(null);
-  const [selectedCompanyForHistory, setSelectedCompanyForHistory] = useState<CompanyWithPayments | null>(null);
+  const [companyToDelete, setCompanyToDelete] = useState<CompanyWithPayments | IsaCompanyWithPayments | null>(null);
+  const [companyToEdit, setCompanyToEdit] = useState<CompanyWithPayments | IsaCompanyWithPayments | null>(null);
+  const [selectedCompanyForHistory, setSelectedCompanyForHistory] = useState<CompanyWithPayments | IsaCompanyWithPayments | null>(null);
   const [minAmount, setMinAmount] = useState<number | undefined>(undefined);
   const [sortByTopPaid, setSortByTopPaid] = useState(false);
 
@@ -72,7 +108,7 @@ export function Dashboard() {
     setSortByTopPaid(!sortByTopPaid);
   };
 
-  const handleSelectDeleteCompany = (company: CompanyWithPayments) => {
+  const handleSelectDeleteCompany = (company: CompanyWithPayments | IsaCompanyWithPayments) => {
     setCompanyToDelete(company);
     setShowDeleteModal(true);
   };
@@ -81,7 +117,7 @@ export function Dashboard() {
     await deleteCompany(companyId);
   };
 
-  const handleSelectEditCompany = (company: CompanyWithPayments) => {
+  const handleSelectEditCompany = (company: CompanyWithPayments | IsaCompanyWithPayments) => {
     setCompanyToEdit(company);
     setShowEditModal(true);
   };
@@ -90,12 +126,12 @@ export function Dashboard() {
     await updateCompany(companyId, name);
   };
 
-  const handleCompanyClick = (company: CompanyWithPayments) => {
+  const handleCompanyClick = (company: CompanyWithPayments | IsaCompanyWithPayments) => {
     setSelectedCompanyForHistory(company);
     setShowPaymentHistoryModal(true);
   };
 
-  const handleEditPayment = (company: CompanyWithPayments) => {
+  const handleEditPayment = () => {
     setShowEditPaymentModal(true);
   };
 
@@ -117,9 +153,17 @@ export function Dashboard() {
     setMinAmount(undefined);
     setSortByTopPaid(false);
   };
+
+  const handleTabChange = (tab: TabType) => {
+    setActiveTab(tab);
+    // Reset filters when tab changes
+    setMinAmount(undefined);
+    setSortByTopPaid(false);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-navy-950">
-      <Header />
+      <Header activeTab={activeTab} onTabChange={handleTabChange} />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Analytics Cards */}
@@ -260,13 +304,14 @@ export function Dashboard() {
             companies={filteredCompanies} 
             selectedYear={selectedYear}
             onCompanyClick={handleCompanyClick}
-            onEditPayment={handleEditPayment}
           />
         )}
 
         {/* Analytics Section at Bottom */}
         <div className="mt-16">
-          <h2 className="text-2xl font-bold text-green-600 mb-8">Analytics & Trends ({selectedYear})</h2>
+          <h2 className="text-2xl font-bold text-green-600 mb-8">
+            Analytics & Trends - {activeTab === 'all' ? 'All Stocks' : 'ISA Stocks'} ({selectedYear})
+          </h2>
           
           {/* Payment Trends Chart */}
           <PaymentTrendsChart companies={companies} selectedYear={selectedYear} />

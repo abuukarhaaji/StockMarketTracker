@@ -1,11 +1,11 @@
 import React from 'react';
 import { X, Building2, Calendar, DollarSign } from 'lucide-react';
-import { CompanyWithPayments } from '../../types';
+import { CompanyWithPayments, IsaCompanyWithPayments } from '../../types';
 
 interface CompanyPaymentHistoryModalProps {
   isOpen: boolean;
   onClose: () => void;
-  company: CompanyWithPayments | null;
+  company: CompanyWithPayments | IsaCompanyWithPayments | null;
   selectedYear: number;
 }
 

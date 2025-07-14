@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Calendar, PoundSterling, ReceiptPoundSterling, X } from 'lucide-react';
-import { CompanyWithPayments } from '../../types';
+import { CompanyWithPayments, IsaCompanyWithPayments } from '../../types';
 
 interface AnalyticsCardsProps {
-  companies: CompanyWithPayments[];
+  companies: (CompanyWithPayments | IsaCompanyWithPayments)[];
   selectedYear: number;
 }
 
