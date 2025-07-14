@@ -44,6 +44,9 @@ export function Dashboard() {
   const getFilteredAndSortedCompanies = () => {
     let filtered = [...companies];
     
+    // Only show companies that have made payments in the selected year
+    filtered = filtered.filter(company => company.total_amount > 0);
+    
     // Apply minimum amount filter
     if (minAmount !== undefined) {
       filtered = filtered.filter(company => company.total_amount >= minAmount);
