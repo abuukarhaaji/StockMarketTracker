@@ -30,7 +30,7 @@ export function CompareYearsModal({ isOpen, onClose, allCompanies, tabType }: Co
   };
 
   const formatPercentage = (percentage: number) => {
-    if (!isFinite(percentage)) return 'N/A';
+    if (!isFinite(percentage) || isNaN(percentage)) return 'N/A';
     const sign = percentage >= 0 ? '+' : '';
     return `${sign}${percentage.toFixed(1)}%`;
   };
@@ -177,7 +177,8 @@ export function CompareYearsModal({ isOpen, onClose, allCompanies, tabType }: Co
                     const year1Amount = yearlyData[year1][index] || 0;
                     const year2Amount = yearlyData[year2][index] || 0;
                     const difference = year2Amount - year1Amount;
-                    const percentageChange = year1Amount > 0 ? ((difference / year1Amount) * 100) : 0;
+                    const percentageChange = year1Amount > 0 ? ((difference / year1Amount) * 100) : 
+                      (year1Amount === 0 && year2Amount > 0) ? 100 : 0;
 
                     return (
                       <tr key={month} className={index % 2 === 0 ? 'bg-white dark:bg-navy-900' : 'bg-gray-50 dark:bg-navy-800'}>
@@ -207,10 +208,11 @@ export function CompareYearsModal({ isOpen, onClose, allCompanies, tabType }: Co
                           )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-center text-sm">
-                          {year1Amount > 0 && difference !== 0 ? (
-                            <span className={
-                              percentageChange > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
-                            }>
+                          {(year1Amount > 0 || (year1Amount === 0 && year2Amount > 0)) && difference !== 0 ? (
+                            <span className={`font-medium ${
+                              percentageChange > 0 ? 'text-green-600 dark:text-green-400' : 
+                              percentageChange < 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-600 dark:text-gray-400'
+                            }`}>
                               {formatPercentage(percentageChange)}
                             </span>
                           ) : (
@@ -246,10 +248,10 @@ export function CompareYearsModal({ isOpen, onClose, allCompanies, tabType }: Co
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-bold">
-                      <span className={
+                      <span className={`${
                         totalPercentageChange > 0 ? 'text-green-600 dark:text-green-400' : 
                         totalPercentageChange < 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-600 dark:text-gray-400'
-                      }>
+                      }`}>
                         {formatPercentage(totalPercentageChange)}
                       </span>
                     </td>
