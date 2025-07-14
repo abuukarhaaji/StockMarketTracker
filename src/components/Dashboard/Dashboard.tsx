@@ -17,6 +17,7 @@ import { EditCompanyModal } from './EditCompanyModal';
 import { CompanyPaymentHistoryModal } from './CompanyPaymentHistoryModal';
 import { EditPaymentModal } from './EditPaymentModal';
 import { DeletePaymentModal } from './DeletePaymentModal';
+import { CompareYearsModal } from './CompareYearsModal';
 import { Plus, Receipt, Filter, Calendar, TrendingDown, BarChart3, Trash2, Edit3 } from 'lucide-react';
 import { CompanyWithPayments, IsaCompanyWithPayments, TabType } from '../../types';
 
@@ -70,6 +71,7 @@ export function Dashboard() {
   const [showPaymentHistoryModal, setShowPaymentHistoryModal] = useState(false);
   const [showEditPaymentModal, setShowEditPaymentModal] = useState(false);
   const [showDeletePaymentModal, setShowDeletePaymentModal] = useState(false);
+  const [showCompareYearsModal, setShowCompareYearsModal] = useState(false);
   const [companyToDelete, setCompanyToDelete] = useState<CompanyWithPayments | IsaCompanyWithPayments | null>(null);
   const [companyToEdit, setCompanyToEdit] = useState<CompanyWithPayments | IsaCompanyWithPayments | null>(null);
   const [selectedCompanyForHistory, setSelectedCompanyForHistory] = useState<CompanyWithPayments | IsaCompanyWithPayments | null>(null);
@@ -273,6 +275,14 @@ export function Dashboard() {
             <TrendingDown className="w-4 h-4" />
             <span>Sort by Top Paid Companies</span>
           </button>
+
+          <button
+            onClick={() => setShowCompareYearsModal(true)}
+            className="flex items-center space-x-2 bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+          >
+            <BarChart3 className="w-4 h-4" />
+            <span>Compare Two Years</span>
+          </button>
         </div>
 
         {/* Companies Table */}
@@ -419,6 +429,12 @@ export function Dashboard() {
         onSubmit={confirmDeletePayment}
         companies={companies}
         selectedYear={selectedYear}
+      />
+
+      <CompareYearsModal
+        isOpen={showCompareYearsModal}
+        onClose={() => setShowCompareYearsModal(false)}
+        tabType={activeTab}
       />
     </div>
 
