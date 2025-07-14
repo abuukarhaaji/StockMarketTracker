@@ -1,4 +1,5 @@
 import React from 'react';
+import { TrendingUp, PiggyBank } from 'lucide-react';
 import { TabType } from '../../types';
 
 interface TabSelectorProps {
@@ -16,8 +17,12 @@ export function TabSelector({ activeTab, onTabChange }: TabSelectorProps) {
             ? 'bg-white dark:bg-navy-700 text-blue-600 dark:text-blue-400 shadow-sm'
             : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
         }`}
+        title="All Stocks"
       >
-        ALL STOCKS
+        <div className="flex items-center space-x-2">
+          <TrendingUp className="w-4 h-4" />
+          <span className="hidden sm:inline">ALL STOCKS</span>
+        </div>
       </button>
       <button
         onClick={() => onTabChange('isa')}
@@ -26,8 +31,12 @@ export function TabSelector({ activeTab, onTabChange }: TabSelectorProps) {
             ? 'bg-white dark:bg-navy-700 text-blue-600 dark:text-blue-400 shadow-sm'
             : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
         }`}
+        title="ISA Stocks and Shares"
       >
-        ISA STOCKS AND SHARES
+        <div className="flex items-center space-x-2">
+          <PiggyBank className="w-4 h-4" />
+          <span className="hidden sm:inline">ISA STOCKS AND SHARES</span>
+        </div>
       </button>
     </div>
   );
