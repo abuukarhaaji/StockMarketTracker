@@ -169,7 +169,7 @@ export function Dashboard() {
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Analytics Cards */}
-        <AnalyticsCards companies={companies} selectedYear={selectedYear} />
+        <AnalyticsCards companies={companies} selectedYear={selectedYear} tabType={activeTab} />
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 mb-8">
