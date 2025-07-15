@@ -5,9 +5,10 @@ import { CompanyWithPayments, IsaCompanyWithPayments } from '../../types';
 interface AnalyticsCardsProps {
   companies: (CompanyWithPayments | IsaCompanyWithPayments)[];
   selectedYear: number;
+  tabType: 'all' | 'isa';
 }
 
-export function AnalyticsCards({ companies, selectedYear }: AnalyticsCardsProps) {
+export function AnalyticsCards({ companies, selectedYear, tabType }: AnalyticsCardsProps) {
   const [taxRate, setTaxRate] = useState(7.5);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newTaxRate, setNewTaxRate] = useState('');
@@ -70,7 +71,7 @@ const formatCurrency = (amount: number) => {
 
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className={`grid grid-cols-1 ${tabType === 'all' ? 'md:grid-cols-3' : 'md:grid-cols-2'} gap-6 mb-8`}>
         {/* Total Income Card */}
         <div className="bg-white dark:bg-navy-900 rounded-xl shadow-sm border border-gray-200 dark:border-navy-700 p-8">
           <div className="text-center">
@@ -82,7 +83,8 @@ const formatCurrency = (amount: number) => {
           </div>
         </div>
 
-        {/* Total Income After Tax Card */}
+        {/* Total Income After Tax Card - Only show for ALL STOCKS */}
+        {tabType === 'all' && (
         <div className="bg-white dark:bg-navy-900 rounded-xl shadow-sm border border-gray-200 dark:border-navy-700 p-8 relative">
           {/* Tax Rate Button - Top Right */}
           <button
@@ -103,6 +105,7 @@ const formatCurrency = (amount: number) => {
             </div>
           </div>
         </div>
+        )}
         
         {/* Average Per Month Card */}
         <div className="bg-white dark:bg-navy-900 rounded-xl shadow-sm border border-gray-200 dark:border-navy-700 p-8">
